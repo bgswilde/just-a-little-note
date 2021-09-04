@@ -34,15 +34,46 @@ app.get('/api/notes', (req, res) => {
     });
 });
 
-// app.post('/api/notes', (req, res) => {
-//     // set up info on note to post
-// });
+app.post('/api/notes', (req, res) => {
+    // read db.json file, creating a new array from file with notes including new one
+    fs.readFile("./db/db.json", "utf-8", (err, notes) => {
+        if (err) {
+            console.log(err);
+            return;
+        }
+        const savedNotes = JSON.parse(notes) || [];
+        savedNotes.push(req.body);
+        console.log(savedNotes);
 
-app.delete('/api/notes/:id', (req, res) => {
-    // removing note in db.json file
-    res.json(db)
+        // create new array to write to file, giving each note in the array an id
+        const completedNotes = [];
+        for (let i = 0; i < savedNotes.length; i++) {
+            let note = {
+                title : savedNotes[i].title,
+                text: savedNotes[i].text,
+                id: i
+            };
+            completedNotes.push(note);
+        };
+        console.log(completedNotes);
+        
+        // write newly created array with ids "completedNotes" to db.json
+        fs.writeFile(
+            path.join(__dirname, "./db/db.json"), 
+            JSON.stringify(completedNotes, null, 2),
+            (err) => {
+                if (err) throw err;
+                res.json(req.body);
+            }
+        )
+    });
 });
-// end API routes
+
+// app.delete('/api/notes/:id', (req, res) => {
+//     // removing note in db.json file
+//     res.json(db)
+// });
+// // end API routes
 
 // wildcard, route other html requests back to the homepage
 app.get('*', (req, res) => {
