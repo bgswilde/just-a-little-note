@@ -49,7 +49,7 @@ app.post('/api/notes', (req, res) => {
             let note = {
                 title : savedNotes[i].title,
                 text: savedNotes[i].text,
-                id: i
+                id: (i + 1)
             };
             completedNotes.push(note);
         };
